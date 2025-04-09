@@ -47,7 +47,7 @@ function Summary() {
 
     useEffect(() => {
         if (houseName) {
-            axios.get(`http://localhost:5000/api/expenses?houseName=${houseName}`, { withCredentials: true })
+            axios.get(`https://shared-backend.vercel.app/api/expenses?houseName=${houseName}`, { withCredentials: true })
                 .then(res => {
                     setExpenses(res.data);
                     calculateTotals(res.data);
@@ -98,4 +98,5 @@ function Summary() {
 }
 
 export default Summary;
+
 

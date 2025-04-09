@@ -32,7 +32,7 @@ function Register() {
     const navigate = useNavigate();
 
     const handleRegister = () => {
-        axios.post('http://localhost:5000/api/auth/register', { email, password })
+        axios.post('https://shared-backend.vercel.app/api/auth/register', { email, password })
             .then(() => {
                 alert('Registrazione effettuata');
                 navigate('/login');
@@ -103,6 +103,7 @@ function Register() {
 }
 
 export default Register;
+
 
 
 

@@ -54,7 +54,7 @@ function AddExpense() {
 
     useEffect(() => {
         if (houseName) {
-            axios.get(`http://localhost:5000/api/house/members?name=${houseName}`)
+            axios.get(`https://shared-backend.vercel.app/api/house/members?name=${houseName}`)
                 .then(res => setMembers(res.data))
                 .catch(() => setMembers([]));
         }
@@ -66,7 +66,7 @@ function AddExpense() {
     };
 
     const handleSubmit = () => {
-        axios.post('http://localhost:5000/api/expenses', {
+        axios.post('https://shared-backend.vercel.app/api/expenses', {
             description,
             amount: parseFloat(amount),
             date,
@@ -136,6 +136,7 @@ function AddExpense() {
 }
 
 export default AddExpense;
+
 
 
 

@@ -51,7 +51,7 @@ function Payments() {
 
     useEffect(() => {
         if (houseName) {
-            axios.get(`http://localhost:5000/api/expenses?houseName=${houseName}`, { withCredentials: true })
+            axios.get(`https://shared-backend.vercel.app/api/expenses?houseName=${houseName}`, { withCredentials: true })
                 .then(res => setExpenses(res.data));
         }
     }, [houseName]);
@@ -70,7 +70,7 @@ function Payments() {
 
     const saveChanges = (expenseId) => {
         const paidByEach = edited[expenseId] || [];
-        axios.patch(`http://localhost:5000/api/expenses/${expenseId}`, { paidByEach })
+        axios.patch(`https://shared-backend.vercel.app/api/expenses/${expenseId}`, { paidByEach })
             .then(() => alert('Aggiornato'));
     };
 
@@ -130,5 +130,6 @@ function Payments() {
 }
 
 export default Payments;
+
 
 
