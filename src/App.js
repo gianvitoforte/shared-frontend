@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -11,18 +11,20 @@ import Payments from './pages/Payments';
 import Navbar from './components/Navbar';
 
 function App() {
+    const isAuthenticated = localStorage.getItem('userEmail') !== null;
+
     return (
         <Router>
             <Navbar />
             <Routes>
-                <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/add" element={<AddExpense />} />
-                <Route path="/group" element={<Group />} />
-                <Route path="/summary" element={<Summary />} />
-                <Route path="/balances" element={<Balances />} />
-                <Route path="/payments" element={<Payments />} />
+                <Route path="/" element={isAuthenticated ? <Home /> : <Navigate to="/login" />} />
+                <Route path="/add" element={isAuthenticated ? <AddExpense /> : <Navigate to="/login" />} />
+                <Route path="/group" element={isAuthenticated ? <Group /> : <Navigate to="/login" />} />
+                <Route path="/summary" element={isAuthenticated ? <Summary /> : <Navigate to="/login" />} />
+                <Route path="/balances" element={isAuthenticated ? <Balances /> : <Navigate to="/login" />} />
+                <Route path="/payments" element={isAuthenticated ? <Payments /> : <Navigate to="/login" />} />
             </Routes>
         </Router>
     );
