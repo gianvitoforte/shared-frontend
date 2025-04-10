@@ -32,7 +32,7 @@ function Register() {
     const navigate = useNavigate();
 
     const handleRegister = () => {
-        axios.post('https://your-backend-url.com/api/auth/register', { email, password })
+        axios.post(`${process.env.REACT_APP_API_URL}/api/auth/register`, { email, password })
             .then(() => {
                 alert('Registrazione effettuata');
                 navigate('/login');
@@ -103,6 +103,7 @@ function Register() {
 }
 
 export default Register;
+
 
 
 
