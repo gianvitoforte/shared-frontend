@@ -41,7 +41,7 @@ function Group() {
     const email = localStorage.getItem('userEmail');
 
     const handleCreate = () => {
-        axios.post('https://shared-backend.vercel.app/api/house/create', {
+        axios.post('https://your-backend-url.com/api/house/create', {
             name: groupName,
             email
         }, { withCredentials: true })
@@ -54,7 +54,7 @@ function Group() {
     };
 
     const handleJoin = () => {
-        axios.post('https://shared-backend.vercel.app/api/house/join', {
+        axios.post('https://your-backend-url.com/api/house/join', {
             name: groupName,
             email
         }, { withCredentials: true })
@@ -93,6 +93,7 @@ function Group() {
 }
 
 export default Group;
+
 
 
 

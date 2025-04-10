@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import LogoutButton from '../components/LogoutButton';
 
-const refinedTheme = createTheme({
+const theme = createTheme({
     palette: {
         mode: 'dark',
         background: {
@@ -29,15 +29,7 @@ const refinedTheme = createTheme({
         }
     },
     typography: {
-        fontFamily: 'Lato, Inter, Roboto, sans-serif',
-        h4: {
-            fontWeight: 500,
-            letterSpacing: '0.5px'
-        },
-        subtitle1: {
-            fontStyle: 'italic',
-            fontSize: '1rem'
-        }
+        fontFamily: 'Lato, Inter, Roboto, sans-serif'
     },
     shape: {
         borderRadius: 14
@@ -47,8 +39,15 @@ const refinedTheme = createTheme({
 function Home() {
     const navigate = useNavigate();
 
+    const isAuthenticated = localStorage.getItem('userEmail') !== null;
+
+    if (!isAuthenticated) {
+        navigate('/login');
+        return null;  // Return null while redirecting
+    }
+
     return (
-        <ThemeProvider theme={refinedTheme}>
+        <ThemeProvider theme={theme}>
             <CssBaseline />
             <Container maxWidth="sm">
                 <Paper elevation={4} sx={{ padding: 4, marginTop: 8 }}>
@@ -86,6 +85,7 @@ function Home() {
 }
 
 export default Home;
+
 
 
 

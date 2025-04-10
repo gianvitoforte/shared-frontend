@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import { Container, TextField, Button, Typography, Paper, CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 
 const theme = createTheme({
@@ -32,7 +31,7 @@ function Register() {
     const navigate = useNavigate();
 
     const handleRegister = () => {
-        axios.post('https://shared-backend.vercel.app/api/auth/register', { email, password })
+        axios.post('https://your-backend-url.com/api/auth/register', { email, password })
             .then(() => {
                 alert('Registrazione effettuata');
                 navigate('/login');
@@ -103,6 +102,7 @@ function Register() {
 }
 
 export default Register;
+
 
 
 

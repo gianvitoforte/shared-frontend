@@ -8,7 +8,7 @@ function GroupSelector() {
     const userEmail = localStorage.getItem('userEmail') || 'utente@example.com';
 
     useEffect(() => {
-        axios.get(`https://shared-backend.vercel.app/api/house/mygroups?email=${userEmail}`)
+        axios.get(`https://your-backend-url.com/api/house/mygroups?email=${userEmail}`)
             .then(res => setGroups(res.data))
             .catch(() => setGroups([]));
     }, [userEmail]);
@@ -41,5 +41,6 @@ function GroupSelector() {
 }
 
 export default GroupSelector;
+
 
 

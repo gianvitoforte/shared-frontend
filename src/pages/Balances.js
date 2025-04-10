@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
     Container,
@@ -49,7 +49,7 @@ function Balances() {
 
     useEffect(() => {
         if (houseName) {
-            axios.get(`https://shared-backend.vercel.app/api/expenses?houseName=${houseName}`, { withCredentials: true })
+            axios.get(`https://your-backend-url.com/api/expenses?houseName=${houseName}`, { withCredentials: true })
                 .then(res => {
                     setExpenses(res.data);
                     calculateBalances(res.data);
@@ -123,6 +123,7 @@ function Balances() {
 }
 
 export default Balances;
+
 
 
 

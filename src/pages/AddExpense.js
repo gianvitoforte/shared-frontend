@@ -18,7 +18,6 @@ import {
     OutlinedInput,
     Chip
 } from '@mui/material';
-import GroupSelector from '../components/GroupSelector';
 
 const theme = createTheme({
     palette: {
@@ -54,7 +53,7 @@ function AddExpense() {
 
     useEffect(() => {
         if (houseName) {
-            axios.get(`https://shared-backend.vercel.app/api/house/members?name=${houseName}`)
+            axios.get(`https://your-backend-url.com/api/house/members?name=${houseName}`)
                 .then(res => setMembers(res.data))
                 .catch(() => setMembers([]));
         }
@@ -66,7 +65,7 @@ function AddExpense() {
     };
 
     const handleSubmit = () => {
-        axios.post('https://shared-backend.vercel.app/api/expenses', {
+        axios.post('https://your-backend-url.com/api/expenses', {
             description,
             amount: parseFloat(amount),
             date,
@@ -91,7 +90,6 @@ function AddExpense() {
             <CssBaseline />
             <Container maxWidth="sm">
                 <Paper elevation={3} sx={{ padding: 4, marginTop: 8 }}>
-                    <GroupSelector />
                     <Box textAlign="center" mb={3}>
                         <Typography variant="h4" gutterBottom>
                             Aggiungi Spesa
@@ -136,6 +134,7 @@ function AddExpense() {
 }
 
 export default AddExpense;
+
 
 
 
