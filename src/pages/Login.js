@@ -32,7 +32,7 @@ function Login() {
     const navigate = useNavigate();
 
     const handleLogin = () => {
-        axios.post('https://your-backend-url.com/api/auth/login', { email, password }, { withCredentials: true })
+        axios.post(`${process.env.REACT_APP_API_URL}/api/auth/login`, { email, password }, { withCredentials: true })
             .then(() => {
                 localStorage.setItem('userEmail', email);
                 alert('Login effettuato');
@@ -104,6 +104,7 @@ function Login() {
 }
 
 export default Login;
+
 
 
 
