@@ -51,17 +51,21 @@ function Home() {
         <ThemeProvider theme={refinedTheme}>
             <CssBaseline />
             <Container maxWidth="sm">
-                <Paper elevation={4} sx={{ padding: 4, marginTop: 8 }}>
+                <Paper
+                    elevation={4}
+                    sx={{
+                        px: { xs: 3, sm: 4 },
+                        py: { xs: 4, sm: 5 },
+                        mt: { xs: 6, sm: 8 }
+                    }}
+                >
                     <Box textAlign="center" mb={3}>
                         <Typography variant="h4" gutterBottom>
                             Shared
                         </Typography>
-                        <Typography variant="subtitle1">
-                            Menù principale
-                        </Typography>
                     </Box>
 
-                    <Stack spacing={1}>
+                    <Stack spacing={2}>
                         <Button variant="outlined" fullWidth onClick={() => navigate('/add')}>
                             Aggiungi Spesa
                         </Button>
@@ -86,6 +90,7 @@ function Home() {
 }
 
 export default Home;
+
 
 
 

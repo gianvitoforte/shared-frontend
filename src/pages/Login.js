@@ -32,12 +32,12 @@ function Login() {
     const navigate = useNavigate();
 
     const handleLogin = () => {
-        axios.post('https://shared-backend.vercel.app/api/auth/login', { email, password }, { withCredentials: true })
+        axios.post('/api/auth/login', { email, password }, { withCredentials: true })
             .then(() => {
                 localStorage.setItem('userEmail', email);
                 localStorage.setItem('username', email);
                 alert('Login effettuato');
-                navigate('/');
+                window.location.href = '/home';
             })
             .catch(() => alert('Credenziali errate'));
     };
@@ -105,6 +105,9 @@ function Login() {
 }
 
 export default Login;
+
+
+
 
 
 

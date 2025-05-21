@@ -13,7 +13,11 @@ import {
     FormGroup,
     Stack,
     Divider,
-    Button
+    Button,
+    Chip,
+    Switch,
+    FormControl,
+    FormLabel
 } from '@mui/material';
 import GroupSelector from '../components/GroupSelector';
 
@@ -44,6 +48,8 @@ function Payments() {
     const [expenses, setExpenses] = useState([]);
     const [houseName, setHouseName] = useState(localStorage.getItem('selectedGroup') || '');
     const [edited, setEdited] = useState({});
+    const [showOnlyOpen, setShowOnlyOpen] = useState(false);
+    const currentUser = localStorage.getItem('username');
 
     useEffect(() => {
         setHouseName(localStorage.getItem('selectedGroup') || '');
@@ -51,77 +57,131 @@ function Payments() {
 
     useEffect(() => {
         if (houseName) {
-            axios.get(`https://shared-backend.vercel.app/api/expenses?houseName=${houseName}`, { withCredentials: true })
+            axios.get(`/api/expenses?houseName=${houseName}`, { withCredentials: true })
                 .then(res => setExpenses(res.data));
         }
     }, [houseName]);
 
+    const handleGroupChange = (selectedGroup) => {
+        setHouseName(selectedGroup);
+        localStorage.setItem('selectedGroup', selectedGroup);
+    };
+
     const togglePayment = (expenseId, participant) => {
         setEdited(prev => {
-            const current = new Set(prev[expenseId] || expenses.find(e => e._id === expenseId)?.paidByEach || []);
-            if (current.has(participant)) {
-                current.delete(participant);
-            } else {
-                current.add(participant);
-            }
+            const original = expenses.find(e => e._id === expenseId)?.paidByEach || [];
+            const current = new Set(prev[expenseId] || original);
+            current.has(participant) ? current.delete(participant) : current.add(participant);
             return { ...prev, [expenseId]: Array.from(current) };
         });
     };
 
     const saveChanges = (expenseId) => {
         const paidByEach = edited[expenseId] || [];
-        axios.patch(`https://shared-backend.vercel.app/api/expenses/${expenseId}`, { paidByEach })
-            .then(() => alert('Aggiornato'));
+        axios.patch(`/api/expenses/${expenseId}`, { paidByEach })
+            .then(() => {
+                alert('Aggiornato');
+                setEdited(prev => {
+                    const updated = { ...prev };
+                    delete updated[expenseId];
+                    return updated;
+                });
+                axios.get(`/api/expenses?houseName=${houseName}`, { withCredentials: true })
+                    .then(res => setExpenses(res.data));
+            });
     };
+
+    const isFullyPaid = (exp) => {
+        const paid = exp.paidByEach || [];
+        return exp.participants.every(p => p === exp.paidBy || paid.includes(p));
+    };
+
+    const hasPendingChanges = (exp) => {
+        const modified = edited[exp._id];
+        if (!modified) return false;
+        const original = exp.paidByEach || [];
+        return JSON.stringify([...modified].sort()) !== JSON.stringify([...original].sort());
+    };
+
+    const userExpenses = expenses.filter(exp => exp.createdBy === currentUser);
+    const openExpenses = userExpenses.filter(exp => !isFullyPaid(exp));
+    const closedExpenses = userExpenses.filter(exp => isFullyPaid(exp));
+    const displayedExpenses = showOnlyOpen ? openExpenses : [...openExpenses, ...closedExpenses];
 
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <Container maxWidth="sm">
                 <Paper elevation={3} sx={{ padding: 4, marginTop: 8 }}>
-                    <GroupSelector />
+                    <GroupSelector onGroupChange={handleGroupChange} />
                     <Box textAlign="center" mb={3}>
                         <Typography variant="h4" gutterBottom>
                             Pagamenti Spese
                         </Typography>
                     </Box>
+                    <FormControl component="fieldset" sx={{ mb: 3 }}>
+                        <FormLabel component="legend">Filtro</FormLabel>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={showOnlyOpen}
+                                    onChange={() => setShowOnlyOpen(!showOnlyOpen)}
+                                />
+                            }
+                            label="Mostra solo spese non saldate"
+                        />
+                    </FormControl>
                     <Stack spacing={3}>
-                        {expenses.map((exp) => (
-                            <Box key={exp._id} sx={{ border: '1px solid #333', padding: 2, borderRadius: 2 }}>
-                                <Typography variant="h6">{exp.description}</Typography>
-                                <Typography variant="body2" color="text.secondary">€ {exp.amount}</Typography>
-                                <Divider sx={{ my: 1 }} />
-                                <FormGroup>
-                                    {exp.participants
-                                        .filter(p => p !== exp.paidBy)
-                                        .map((p) => (
-                                            <FormControlLabel
-                                                key={p}
-                                                control={
-                                                    <Checkbox
-                                                        checked={(
-                                                            edited[exp._id] || exp.paidByEach || []
-                                                        ).includes(p)}
-                                                        onChange={() => togglePayment(exp._id, p)}
-                                                        disabled={exp.createdBy !== localStorage.getItem('username')}
-                                                    />
-                                                }
-                                                label={p}
-                                            />
-                                        ))}
-                                </FormGroup>
-                                {exp.createdBy === localStorage.getItem('username') && (
-                                    <Button
-                                        variant="outlined"
-                                        size="small"
-                                        onClick={() => saveChanges(exp._id)}
-                                        sx={{ mt: 1 }}
-                                    >
-                                        Salva
-                                    </Button>
-                                )}
-                            </Box>
-                        ))}
+                        {displayedExpenses.map((exp) => {
+                            const paidList = edited[exp._id] || exp.paidByEach || [];
+                            const complete = isFullyPaid(exp);
+                            const pending = hasPendingChanges(exp);
+
+                            return (
+                                <Box key={exp._id} sx={{
+                                    border: '1px solid',
+                                    borderColor: complete ? 'success.main' : '#444',
+                                    padding: 2,
+                                    borderRadius: 2,
+                                    backgroundColor: complete ? '#26332c' : '#1e222a'
+                                }}>
+                                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                                        <Typography variant="h6">{exp.description}</Typography>
+                                        {complete && !pending && (
+                                            <Chip label="Completato" color="success" size="small" />
+                                        )}
+                                    </Box>
+                                    <Typography variant="body2" color="text.secondary">€ {exp.amount}</Typography>
+                                    <Divider sx={{ my: 1 }} />
+                                    <FormGroup>
+                                        {exp.participants
+                                            .filter(p => p !== exp.paidBy)
+                                            .map((p) => (
+                                                <FormControlLabel
+                                                    key={p}
+                                                    control={
+                                                        <Checkbox
+                                                            checked={paidList.includes(p)}
+                                                            onChange={() => togglePayment(exp._id, p)}
+                                                        />
+                                                    }
+                                                    label={p}
+                                                />
+                                            ))}
+                                    </FormGroup>
+                                    {pending && (
+                                        <Button
+                                            variant="outlined"
+                                            size="small"
+                                            onClick={() => saveChanges(exp._id)}
+                                            sx={{ mt: 1 }}
+                                        >
+                                            Salva
+                                        </Button>
+                                    )}
+                                </Box>
+                            );
+                        })}
                     </Stack>
                 </Paper>
             </Container>
@@ -130,6 +190,12 @@ function Payments() {
 }
 
 export default Payments;
+
+
+
+
+
+
 
 
 

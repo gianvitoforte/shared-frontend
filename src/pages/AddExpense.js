@@ -54,11 +54,16 @@ function AddExpense() {
 
     useEffect(() => {
         if (houseName) {
-            axios.get(`https://shared-backend.vercel.app/api/house/members?name=${houseName}`)
+            axios.get(`/api/house/members?name=${houseName}`)
                 .then(res => setMembers(res.data))
                 .catch(() => setMembers([]));
         }
     }, [houseName]);
+
+    const handleGroupChange = (selectedGroup) => {
+        setHouseName(selectedGroup);
+        localStorage.setItem('selectedGroup', selectedGroup);
+    };
 
     const handleParticipantsChange = (event) => {
         const { target: { value } } = event;
@@ -66,7 +71,7 @@ function AddExpense() {
     };
 
     const handleSubmit = () => {
-        axios.post('https://shared-backend.vercel.app/api/expenses', {
+        axios.post('/api/expenses', {
             description,
             amount: parseFloat(amount),
             date,
@@ -90,17 +95,42 @@ function AddExpense() {
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <Container maxWidth="sm">
-                <Paper elevation={3} sx={{ padding: 4, marginTop: 8 }}>
-                    <GroupSelector />
+                <Paper
+                    elevation={3}
+                    sx={{
+                        px: { xs: 3, sm: 4 },
+                        py: { xs: 4, sm: 5 },
+                        mt: { xs: 6, sm: 8 }
+                    }}
+                >
+                    <GroupSelector onGroupChange={handleGroupChange} />
                     <Box textAlign="center" mb={3}>
                         <Typography variant="h4" gutterBottom>
                             Aggiungi Spesa
                         </Typography>
                     </Box>
                     <Stack spacing={2}>
-                        <TextField label="Descrizione" fullWidth value={description} onChange={e => setDescription(e.target.value)} />
-                        <TextField label="Importo" type="number" fullWidth value={amount} onChange={e => setAmount(e.target.value)} />
-                        <TextField label="Data" type="date" fullWidth value={date} onChange={e => setDate(e.target.value)} InputLabelProps={{ shrink: true }} />
+                        <TextField
+                            label="Descrizione"
+                            fullWidth
+                            value={description}
+                            onChange={e => setDescription(e.target.value)}
+                        />
+                        <TextField
+                            label="Importo"
+                            type="number"
+                            fullWidth
+                            value={amount}
+                            onChange={e => setAmount(e.target.value)}
+                        />
+                        <TextField
+                            label="Data"
+                            type="date"
+                            fullWidth
+                            value={date}
+                            onChange={e => setDate(e.target.value)}
+                            InputLabelProps={{ shrink: true }}
+                        />
                         <FormControl fullWidth>
                             <InputLabel>Partecipanti</InputLabel>
                             <Select
@@ -125,7 +155,11 @@ function AddExpense() {
                                     ))}
                             </Select>
                         </FormControl>
-                        <Button variant="outlined" fullWidth onClick={handleSubmit}>
+                        <Button
+                            variant="outlined"
+                            fullWidth
+                            onClick={handleSubmit}
+                        >
                             Aggiungi
                         </Button>
                     </Stack>
@@ -136,6 +170,9 @@ function AddExpense() {
 }
 
 export default AddExpense;
+
+
+
 
 
 

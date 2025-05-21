@@ -7,7 +7,7 @@ function LogoutButton() {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        axios.post('https://shared-backend.vercel.app/api/auth/logout', {}, { withCredentials: true })
+        axios.post('/api/auth/logout', {}, { withCredentials: true })
             .then(() => {
                 alert('Logout effettuato');
                 localStorage.clear();
@@ -24,5 +24,6 @@ function LogoutButton() {
 }
 
 export default LogoutButton;
+
 
 

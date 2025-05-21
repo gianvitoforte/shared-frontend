@@ -3,7 +3,6 @@ import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
 
 function Navbar() {
-    const hasGroup = localStorage.getItem('selectedGroup');
     const location = useLocation();
     const hideOnPaths = ['/login', '/register'];
     if (hideOnPaths.includes(location.pathname)) return null;
@@ -15,14 +14,12 @@ function Navbar() {
                     Shared
                 </Typography>
                 <Box>
-                    <Button component={Link} to="/" color="inherit">
+                    <Button component={Link} to="/home" color="inherit">
                         Home
                     </Button>
-                    {hasGroup && (
-                        <Button component={Link} to="/payments" color="inherit">
-                            Pagamenti
-                        </Button>
-                    )}
+                    <Button component={Link} to="/payments" color="inherit">
+                        Pagamenti
+                    </Button>
                 </Box>
             </Toolbar>
         </AppBar>
@@ -30,4 +27,5 @@ function Navbar() {
 }
 
 export default Navbar;
+
 

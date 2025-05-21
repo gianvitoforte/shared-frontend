@@ -8,9 +8,13 @@ import {
     CssBaseline,
     ThemeProvider,
     createTheme,
-    List,
-    ListItem,
-    ListItemText
+    Grid,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow
 } from '@mui/material';
 import GroupSelector from '../components/GroupSelector';
 
@@ -49,7 +53,7 @@ function Balances() {
 
     useEffect(() => {
         if (houseName) {
-            axios.get(`https://shared-backend.vercel.app/api/expenses?houseName=${houseName}`, { withCredentials: true })
+            axios.get(`/api/expenses?houseName=${houseName}`, { withCredentials: true })
                 .then(res => {
                     setExpenses(res.data);
                     calculateBalances(res.data);
@@ -61,6 +65,11 @@ function Balances() {
                 });
         }
     }, [houseName]);
+
+    const handleGroupChange = (selectedGroup) => {
+        setHouseName(selectedGroup);
+        localStorage.setItem('selectedGroup', selectedGroup);
+    };
 
     const calculateBalances = (expenses) => {
         const memberTotals = {};
@@ -85,13 +94,17 @@ function Balances() {
         setBalances(result);
     };
 
+    const creditors = balances.filter(b => b.balance > 0).sort((a, b) => b.balance - a.balance);
+    const debtors = balances.filter(b => b.balance < 0).sort((a, b) => a.balance - b.balance);
+    const maxLength = Math.max(creditors.length, debtors.length);
+
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <Container maxWidth="sm">
-                <Paper elevation={3} sx={{ padding: 4, marginTop: 8 }}>
-                    <GroupSelector />
-                    <Box textAlign="center" mb={3}>
+            <Container maxWidth="md">
+                <Paper elevation={3} sx={{ padding: 5, marginTop: 8 }}>
+                    <GroupSelector onGroupChange={handleGroupChange} />
+                    <Box textAlign="center" mb={4}>
                         <Typography variant="h4" gutterBottom>
                             Saldo
                         </Typography>
@@ -101,20 +114,77 @@ function Balances() {
                             Nessuna spesa trovata per questo gruppo.
                         </Typography>
                     )}
-                    {balances.length > 0 && (
-                        <List>
-                            {balances.map((b, i) => (
-                                <ListItem key={i}>
-                                    <ListItemText
-                                        primary={b.name}
-                                        secondary={`€ ${b.balance}`}
-                                        secondaryTypographyProps={{
-                                            color: b.balance > 0 ? 'success.main' : b.balance < 0 ? 'error.main' : 'text.secondary'
-                                        }}
-                                    />
-                                </ListItem>
-                            ))}
-                        </List>
+                    {calculated && balances.length > 0 && (
+                        <Grid container spacing={4} justifyContent="center" alignItems="flex-start">
+                            <Grid item xs={12} md={6}>
+                                <Box sx={{ minWidth: 360 }}>
+                                    <Typography variant="h6" gutterBottom textAlign="center">
+                                        Utenti in attivo
+                                    </Typography>
+                                    <TableContainer component={Paper} sx={{ backgroundColor: '#1e222a' }}>
+                                        <Table>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell sx={{ fontSize: '1.05rem' }}>Nome</TableCell>
+                                                    <TableCell align="right" sx={{ fontSize: '1.05rem' }}>Saldo</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {[...Array(maxLength)].map((_, i) => {
+                                                    const user = creditors[i];
+                                                    return user ? (
+                                                        <TableRow key={i}>
+                                                            <TableCell sx={{ fontSize: '1.05rem' }}>{user.name}</TableCell>
+                                                            <TableCell align="right" sx={{ color: 'success.main', fontSize: '1.05rem' }}>
+                                                                € {user.balance.toFixed(2)}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ) : (
+                                                        <TableRow key={i}>
+                                                            <TableCell colSpan={2}>&nbsp;</TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </Box>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <Box sx={{ minWidth: 360 }}>
+                                    <Typography variant="h6" gutterBottom textAlign="center">
+                                        Utenti in passivo
+                                    </Typography>
+                                    <TableContainer component={Paper} sx={{ backgroundColor: '#1e222a' }}>
+                                        <Table>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell sx={{ fontSize: '1.05rem' }}>Nome</TableCell>
+                                                    <TableCell align="right" sx={{ fontSize: '1.05rem' }}>Saldo</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {[...Array(maxLength)].map((_, i) => {
+                                                    const user = debtors[i];
+                                                    return user ? (
+                                                        <TableRow key={i}>
+                                                            <TableCell sx={{ fontSize: '1.05rem' }}>{user.name}</TableCell>
+                                                            <TableCell align="right" sx={{ color: 'error.main', fontSize: '1.05rem' }}>
+                                                                € {user.balance.toFixed(2)}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ) : (
+                                                        <TableRow key={i}>
+                                                            <TableCell colSpan={2}>&nbsp;</TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </Box>
+                            </Grid>
+                        </Grid>
                     )}
                 </Paper>
             </Container>
@@ -123,6 +193,14 @@ function Balances() {
 }
 
 export default Balances;
+
+
+
+
+
+
+
+
 
 
 
