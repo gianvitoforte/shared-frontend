@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../utils/axiosConfig';
 import { Box, MenuItem, Select, FormControl, InputLabel, Typography } from '@mui/material';
 
 function GroupSelector({ onGroupChange }) {
@@ -9,7 +9,9 @@ function GroupSelector({ onGroupChange }) {
 
     useEffect(() => {
         axios.get(`/api/house/mygroups?email=${userEmail}`)
-            .then(res => setGroups(res.data))
+            .then(res => {
+                setGroups(res.data);
+            })
             .catch(() => setGroups([]));
     }, [userEmail]);
 
@@ -29,7 +31,7 @@ function GroupSelector({ onGroupChange }) {
                     label="Seleziona Gruppo"
                     onChange={(e) => setSelectedGroup(e.target.value)}
                 >
-                    {groups.map((group, i) => (
+                    {Array.isArray(groups) && groups.map((group, i) => (
                         <MenuItem key={i} value={group}>{group}</MenuItem>
                     ))}
                 </Select>
@@ -44,6 +46,7 @@ function GroupSelector({ onGroupChange }) {
 }
 
 export default GroupSelector;
+
 
 
 
