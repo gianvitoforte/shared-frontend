@@ -78,8 +78,6 @@ function AddExpense() {
             paidBy: username,
             participants: [...participants, username],
             houseName
-        }, {
-            withCredentials: true
         }).then(() => {
             alert('Spesa aggiunta');
             setDescription('');
@@ -170,6 +168,7 @@ function AddExpense() {
 }
 
 export default AddExpense;
+
 
 
 
